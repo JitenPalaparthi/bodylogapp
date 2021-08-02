@@ -1,4 +1,4 @@
-package com.example.painlog
+package com.example.bodylog
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,6 +1,6 @@
 {
-    "name": "painlog",
-    "short_name": "painlog",
+    "name": "bodylog",
+    "short_name": "bodylog",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

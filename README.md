@@ -1,4 +1,4 @@
-# painlog
+# bodylog
 
 A new Flutter project.
 
