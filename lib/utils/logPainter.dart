@@ -10,10 +10,9 @@ class LogPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..strokeWidth = 1.0
       ..color = _color;
-    //..color = Colors.indigo;
 
     canvas.drawRRect(
-      RRect.fromRectAndRadius(Rect.fromLTWH(5, 5, 5, 5), Radius.circular(5)),
+      RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, 5, 5), Radius.circular(5)),
       paint,
     );
   }
