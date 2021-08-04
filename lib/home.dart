@@ -425,7 +425,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () {},
                               ),
                               OutlinedButton(
-                                  child: Text("Delete"), onPressed: () {}),
+                                  child: Text("Delete"),
+                                  onPressed: () {
+                                    int index = -1;
+                                    for (int i = 0;
+                                        i < _positionWidgets.length;
+                                        i++) {
+                                      if (_positionWidgets[i].key == somekey) {
+                                        index = i;
+                                        break;
+                                      }
+                                    }
+                                    if (index >= 0) {
+                                      setState(() {
+                                        _positionWidgets.removeAt(index);
+                                        _bodyPoints.removeAt(index - 1);
+                                      });
+                                    }
+                                  }),
                             ])),
                   ]);
             }
