@@ -21,6 +21,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Color _color = Colors.red;
   ProblemType _ptype = ProblemType.Iching;
   List<BodyPoint> _bodyPoints = [];
+
+  DateTime _date = DateTime.now();
+  TimeOfDay _time =
+      TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
+  DateTime _startdate = DateTime.now();
+  TimeOfDay _starttime =
+      TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
   @override
   void initState() {
     isSelected = [true, false, false];
@@ -230,12 +237,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 "---------Y=" +
                 tp.localPosition.dy.toString());
             setState(() {
+              UniqueKey _someKey = UniqueKey();
               _reload = true;
               _offset = tp.localPosition;
-              _positionWidgets.add(getContainerWidget(_offset, _color));
+              _positionWidgets
+                  .add(getContainerWidget(_someKey, _offset, _color));
 
-              _bodyPoints.add(
-                  BodyPoint(tp.localPosition, _ptype, DateTime.now().toUtc()));
+              _bodyPoints.add(BodyPoint(
+                  _someKey,
+                  tp.localPosition,
+                  _ptype,
+                  DateTime.now().toUtc(),
+                  "",
+                  DateTime.now().toUtc(),
+                  DateTime.now().add(const Duration(hours: 1)).toUtc()));
             });
           }
         },
@@ -244,8 +259,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return _positionWidgets;
   }
 
-  Widget getContainerWidget(Offset offset, Color color) {
+  Widget getContainerWidget(UniqueKey somekey, Offset offset, Color color) {
     return Positioned(
+        key: somekey,
         top: offset.dy,
         left: offset.dx,
         child: GestureDetector(
@@ -255,6 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           onTapUp: (tp) {
+            print(somekey.toString());
             if (!_isSwitched) {
               final RenderBox overlay =
                   Overlay.of(context)!.context.findRenderObject() as RenderBox;
@@ -263,22 +280,153 @@ class _MyHomePageState extends State<MyHomePage> {
                   position: RelativeRect.fromRect(
                       tp.globalPosition &
                           Size(40, 40), // smaller rect, the touch area
-                      Offset.zero & overlay.size
-                      //           Rect.Size(10, 10), // Bigger rect, the entire screen
-                      ),
+                      Offset.zero & overlay.size),
                   items: [
                     PopupMenuItem<int>(
-                      value: 0,
-                      child: Text('Working a lot harder'),
-                    ),
+                        value: 0,
+                        child: Container(
+                            child: InputDecorator(
+                                decoration: InputDecoration(
+                                  labelText: 'No Problem Date&Time',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      TextButton(
+                                        child: Text(DateFormat('yyyy-MM-dd')
+                                            .format(_date)),
+                                        onPressed: () async {
+                                          final DateTime newDate =
+                                              await showDatePicker(
+                                                    context: context,
+                                                    firstDate: DateTime.now()
+                                                        .add(const Duration(
+                                                            days: -100)),
+                                                    lastDate: DateTime.now()
+                                                        .add(const Duration(
+                                                            days: 100)),
+                                                    initialDate: DateTime.now(),
+                                                    helpText: 'Select a date',
+                                                  ) ??
+                                                  DateTime.now();
+
+                                          setState(() {
+                                            _date = newDate;
+                                          });
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text('${_time.format(context)}'),
+                                        onPressed: () async {
+                                          final TimeOfDay newTime =
+                                              await showTimePicker(
+                                                    context: context,
+                                                    initialTime: _time,
+                                                  ) ??
+                                                  TimeOfDay(
+                                                      hour: DateTime.now().hour,
+                                                      minute: DateTime.now()
+                                                          .minute);
+
+                                          setState(() {
+                                            _time = newTime;
+                                          });
+                                        },
+                                      )
+                                    ])))),
+                    PopupMenuItem<int>(
+                        value: 1,
+                        child: Padding(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Container(
+                                child: InputDecorator(
+                                    decoration: InputDecoration(
+                                      labelText: 'Problem Started Date&Time',
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                    ),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          TextButton(
+                                            child: Text(DateFormat('yyyy-MM-dd')
+                                                .format(_startdate)),
+                                            onPressed: () async {
+                                              final DateTime newDate =
+                                                  await showDatePicker(
+                                                        context: context,
+                                                        firstDate:
+                                                            DateTime.now().add(
+                                                                const Duration(
+                                                                    days:
+                                                                        -100)),
+                                                        lastDate: DateTime.now()
+                                                            .add(const Duration(
+                                                                days: 100)),
+                                                        initialDate:
+                                                            DateTime.now(),
+                                                        helpText:
+                                                            'Select a date',
+                                                      ) ??
+                                                      DateTime.now();
+
+                                              setState(() {
+                                                _startdate = newDate;
+                                              });
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text(
+                                                '${_starttime.format(context)}'),
+                                            onPressed: () async {
+                                              final TimeOfDay newTime =
+                                                  await showTimePicker(
+                                                        context: context,
+                                                        initialTime: _time,
+                                                      ) ??
+                                                      TimeOfDay(
+                                                          hour: DateTime.now()
+                                                              .hour,
+                                                          minute: DateTime.now()
+                                                              .minute);
+
+                                              setState(() {
+                                                _starttime = newTime;
+                                              });
+                                            },
+                                          )
+                                        ]))))),
                     PopupMenuItem<int>(
                       value: 1,
-                      child: Text('Working a lot less'),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Log Description',
+                          border: InputBorder.none,
+                          hintText: 'Describe this log',
+                          enabledBorder:
+                              UnderlineInputBorder(borderSide: BorderSide()),
+                        ),
+                      ),
                     ),
                     PopupMenuItem<int>(
-                      value: 1,
-                      child: Text('Working a lot smarter'),
-                    ),
+                        value: 0,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              OutlinedButton(
+                                child: Text("Save"),
+                                onPressed: () {},
+                              ),
+                              OutlinedButton(
+                                  child: Text("Delete"), onPressed: () {}),
+                            ])),
                   ]);
             }
           },

@@ -9,10 +9,13 @@ extension ParseToString on ProblemType {
 }
 
 class BodyPoint {
+  UniqueKey key; // Only used by the flutter engine
   Offset offset;
   ProblemType problemType;
   DateTime logOn;
-  //DateTime starton;
-  //DateTime endOn;
-  BodyPoint(this.offset, this.problemType, this.logOn);
+  String description;
+  DateTime startOn;
+  DateTime noMoreOn;
+  BodyPoint(this.key, this.offset, this.problemType, this.logOn,
+      this.description, this.startOn, this.noMoreOn);
 }
