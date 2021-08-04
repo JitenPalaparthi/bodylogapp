@@ -164,6 +164,12 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               DataColumn(
                                 label: Text(
+                                  'Description',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
                                   'Log Date Time',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
@@ -186,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   DataCell(Text(item.offset.dx.toString() +
                                       "-" +
                                       item.offset.dy.toString())),
-                                  // DataCell(Text(item.logOn.toIso8601String())),
+                                  DataCell(Text(item.description)),
                                   DataCell(Text(
                                       DateFormat('yyyy-MM-dd hh:mm:ss')
                                           .format(item.logOn))),
@@ -271,7 +277,22 @@ class _MyHomePageState extends State<MyHomePage> {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           onTapUp: (tp) {
-            print(somekey.toString());
+            //print(somekey.toString());
+            TextEditingController tc = TextEditingController();
+            int widindex = -1; // current widget index
+            int pointindex = -1; // current body point index
+            for (int i = 0; i < _positionWidgets.length; i++) {
+              if (_positionWidgets[i].key == somekey) {
+                widindex = i;
+                break;
+              }
+            }
+            for (int i = 0; i < _bodyPoints.length; i++) {
+              if (_bodyPoints[i].key == somekey) {
+                pointindex = i;
+                break;
+              }
+            }
             if (!_isSwitched) {
               final RenderBox overlay =
                   Overlay.of(context)!.context.findRenderObject() as RenderBox;
@@ -406,6 +427,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     PopupMenuItem<int>(
                       value: 1,
                       child: TextField(
+                        controller: tc,
                         decoration: InputDecoration(
                           labelText: 'Log Description',
                           border: InputBorder.none,
@@ -422,24 +444,20 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               OutlinedButton(
                                 child: Text("Save"),
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    _bodyPoints[pointindex].description =
+                                        tc.text;
+                                  });
+                                },
                               ),
                               OutlinedButton(
                                   child: Text("Delete"),
                                   onPressed: () {
-                                    int index = -1;
-                                    for (int i = 0;
-                                        i < _positionWidgets.length;
-                                        i++) {
-                                      if (_positionWidgets[i].key == somekey) {
-                                        index = i;
-                                        break;
-                                      }
-                                    }
-                                    if (index >= 0) {
+                                    if (widindex >= 0) {
                                       setState(() {
-                                        _positionWidgets.removeAt(index);
-                                        _bodyPoints.removeAt(index - 1);
+                                        _positionWidgets.removeAt(widindex);
+                                        _bodyPoints.removeAt(pointindex);
                                       });
                                     }
                                   }),
